@@ -22,14 +22,21 @@
             "main": "apps/app-root/src/main.ts",
             "polyfills": "apps/app-root/src/polyfills.ts",
             "tsConfig": "apps/app-root/tsconfig.app.json",
+            "aot": false,
             "assets": [
               "apps/app-root/src/favicon.ico",
               "apps/app-root/src/assets"
             ],
             "styles": [
+              "libs/styles/styles.sass",
               "apps/app-root/src/styles.sass"
             ],
-            "scripts": [],
+            "scripts": [
+              "apps/app-root/src/web-components/wc-web-component-test.js",
+              {
+                "input": "node_modules/document-register-element/build/document-register-element.js"
+              }
+            ],
             "es5BrowserSupport": true
           },
           "configurations": {
@@ -139,7 +146,7 @@
       "root": "micro-apps/web-component-test/",
       "sourceRoot": "micro-apps/web-component-test/src",
       "projectType": "application",
-      "prefix": "app",
+      "prefix": "wc",
       "schematics": {
         "@schematics/angular:component": {
           "style": "sass"
@@ -147,7 +154,7 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "dist/web-component-test",
             "index": "micro-apps/web-component-test/src/index.html",
@@ -159,10 +166,21 @@
               "micro-apps/web-component-test/src/assets"
             ],
             "styles": [
+              "libs/styles/styles.sass",
               "micro-apps/web-component-test/src/styles.sass"
             ],
-            "scripts": [],
-            "es5BrowserSupport": true
+            "scripts": [
+              {
+                "input": "node_modules/document-register-element/build/document-register-element.js"
+              }
+            ],
+            "es5BrowserSupport": true,
+            "customWebpackConfig": {
+              "path": "micro-apps/web-component-test/extra-webpack.config.js",
+              "mergeStrategies": {
+                "externals": "replace"
+              }
+            }
           },
           "configurations": {
             "production": {
@@ -170,10 +188,14 @@
                 {
                   "replace": "micro-apps/web-component-test/src/environments/environment.ts",
                   "with": "micro-apps/web-component-test/src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "libs/styles/styles.sass",
+                  "with": "libs/styles/styles.blank.sass"
                 }
               ],
               "optimization": true,
-              "outputHashing": "all",
+              "outputHashing": "none",
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,

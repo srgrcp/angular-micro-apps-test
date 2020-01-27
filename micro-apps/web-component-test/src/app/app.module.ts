@@ -1,18 +1,33 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Injector, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import { WebComponentComponent } from './web-component/web-component.component';
+import { createCustomElement } from '@angular/elements';
 
 @NgModule({
   declarations: [
-    AppComponent
+    WebComponentComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule
   ],
+  entryComponents: [WebComponentComponent],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class AppModule { }
+export class AppModule {
+    constructor(
+        private injector: Injector
+      ) { }
+    
+      ngDoBootstrap() {
+        const webComponentElement = createCustomElement(
+            WebComponentComponent,
+          { injector: this.injector }
+        )
+        customElements.define('wc-web-component', webComponentElement)
+      }
+}
